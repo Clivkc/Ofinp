@@ -3,77 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Every - 以创新科技塑造数字未来">
     <title>Every - 创新驱动未来</title>
     <style>
-        /* 更新颜色变量便于维护 */
-        :root {
-            --primary-color: #2563eb;
-            --gradient-start: #6366f1;
-            --gradient-end: #a855f7;
-            --text-dark: #1e293b;
+        /* 新增图片加载动画 */
+        .hero {
+            position: relative;
+            overflow: hidden;
+            background: #1a1a1a; /* 备选深色背景 */
         }
 
-        /* 优化字体渲染 */
-        body {
-            line-height: 1.6;
-            color: var(--text-dark);
-            -webkit-font-smoothing: antialiased;
+        .hero-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s ease;
+            z-index: 1;
         }
 
-        /* 增强导航栏交互 */
-        .navbar {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(8px);
+        .hero-bg.loaded {
+            opacity: 1;
         }
 
-        /* 新增加载动画 */
-        .hero h1 {
-            animation: fadeInUp 1s ease;
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* 加载指示器 */
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
         }
 
-        /* 优化移动端体验 */
-        @media (max-width: 640px) {
-            .navbar {
-                padding: 1rem;
-            }
-            
-            .nav-links {
-                justify-content: space-around;
-                gap: 0.5rem;
-            }
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <!-- 其他部分保持原有结构不变 -->
-
-    <footer style="background: #f8f9fa; padding: 2rem; text-align: center;">
-        <!-- 更新年份到2025 -->
-        <p>&copy; 2025 Every. All rights reserved.</p>
-        <div style="margin-top: 1rem;">
-            <a href="https://github.com/yourorg" target="_blank" rel="noopener">GitHub</a>
-            <!-- 添加 aria-label 提升可访问性 -->
-            <a href="#" aria-label="LinkedIn" style="color: #333; margin: 0 0.5rem;">LinkedIn</a>
-            <a href="#" aria-label="Twitter" style="color: #333; margin: 0 0.5rem;">Twitter</a>
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="loader"></div>
+        <img class="hero-bg" alt="动态背景图片" id="dynamic-bg">
+        <div class="hero-content">
+            <h1>欢迎来到 Every</h1>
+            <p>创新科技，塑造未来</p>
         </div>
-    </footer>
+    </section>
 
-    <!-- 添加动态年份脚本 -->
     <script>
-        // 自动更新年份
-        document.querySelector('footer p').innerHTML = `&copy; ${new Date().getFullYear()} Every. All rights reserved.`;
+        // Unsplash API配置（需要注册获取自己的access key）
+        const UNSPLASH_ACCESS_KEY = '你的AccessKey';
+        const API_URL = `https://api.unsplash.com/photos/random?query=technology&orientation=landscape&client_id=${UNSPLASH_ACCESS_KEY}`;
+
+        // 图片加载器
+        const loadDynamicBackground = async () => {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                const bgImage = new Image();
+                bgImage.src = `${data.urls.raw}&w=1920&fit=max`;
+                bgImage.alt = data.alt_description || '科技背景图片';
+                
+                bgImage.onload = () => {
+                    document.querySelector('.loader').remove();
+                    document.getElementById('dynamic-bg').classList.add('loaded');
+                    document.getElementById('dynamic-bg').src = bgImage.src;
+                };
+
+                // 添加图片作者信息（可选）
+                const credit = document.createElement('div');
+                credit.style.position = 'absolute';
+                credit.style.bottom = '10px';
+                credit.style.right = '10px';
+                credit.style.color = 'white';
+                credit.style.zIndex = '4';
+                credit.innerHTML = `Photo by <a href="${data.user.links.html}?utm_source=your_app_name&utm_medium=referral" target="_blank" rel="noopener">${data.user.name}</a> on Unsplash`;
+                document.querySelector('.hero').appendChild(credit);
+                
+            } catch (error) {
+                console.error('加载背景失败:', error);
+                document.querySelector('.loader').remove();
+                document.getElementById('dynamic-bg').src = 'fallback-bg.jpg'; // 备选本地图片
+            }
+        }
+
+        // 初始化加载
+        window.addEventListener('DOMContentLoaded', loadDynamicBackground);
     </script>
 </body>
 </html>
