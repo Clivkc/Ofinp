@@ -34,6 +34,19 @@
     }
 }
 
+/* 在mobile.css中添加 */
+@media (max-width: 576px) {
+  .navbar {
+    position: sticky; /* 优化移动端导航定位 */
+    top: -100px;
+    transition: top 0.3s;
+  }
+  
+  .navbar-active {
+    top: 0;
+  }
+}
+
 @media (hover: none) {
     .nav-links a {
         min-width: 60px;
