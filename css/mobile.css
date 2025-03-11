@@ -61,3 +61,25 @@
         transform: scale(0.98);
     }
 }
+
+/* 导航栏交互动画 */
+.navbar {
+  transition: all 0.3s ease !important;
+}
+
+.navbar-scroll {
+  background: rgba(255,255,255,0.98) !important;
+  backdrop-filter: blur(8px) !important;
+  box-shadow: 0 2px 15px rgba(0,0,0,0.1) !important;
+}
+
+@media (max-width: 576px) {
+  .navbar {
+    padding: 0.8rem !important;
+    top: -100px !important;
+  }
+  
+  .navbar-active {
+    top: 0 !important;
+  }
+}
