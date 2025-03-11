@@ -5,104 +5,259 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Every - 创新驱动未来</title>
     <style>
-        /* 新增图片加载动画 */
-        .hero {
-            position: relative;
-            overflow: hidden;
-            background: #1a1a1a; /* 备选深色背景 */
+        /* 还原初始样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
         }
 
-        .hero-bg {
+        body {
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #007bff;
+        }
+
+        /* 修改后的安全背景方案 */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* 保留默认渐变 */
+            color: white;
+            padding: 0 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 新增动态背景层 */
+        .dynamic-bg {
             position: absolute;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0;
-            transition: opacity 1s ease;
+            opacity: 0.3; /* 与渐变背景叠加 */
             z-index: 1;
-        }
-
-        .hero-bg.loaded {
-            opacity: 1;
         }
 
         .hero-content {
             position: relative;
             z-index: 2;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
-        /* 加载指示器 */
-        .loader {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #fff;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 3;
-        }
-
-        @keyframes spin {
-            to { transform: translate(-50%, -50%) rotate(360deg); }
+        /* 保持原有区块样式不变 */
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
     </style>
 </head>
 <body>
-    <!-- Hero Section -->
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="#home">首页</a></li>
+            <li><a href="#about">关于我们</a></li>
+            <li><a href="#services">服务</a></li>
+            <li><a href="#contact">联系我们</a></li>
+        </ul>
+    </nav>
+
     <section class="hero" id="home">
-        <div class="loader"></div>
-        <img class="hero-bg" alt="动态背景图片" id="dynamic-bg">
+        <!-- 动态背景图片 -->
+        <img class="dynamic-bg" id="dynamicImage" alt="动态背景">
         <div class="hero-content">
             <h1>欢迎来到 Every</h1>
             <p>创新科技，塑造未来</p>
         </div>
     </section>
 
+    <!-- 其他区块保持不变 -->
+
     <script>
-        // Unsplash API配置（需要注册获取自己的access key）
-        const UNSPLASH_ACCESS_KEY = '你的AccessKey';
-        const API_URL = `https://api.unsplash.com/photos/random?query=technology&orientation=landscape&client_id=${UNSPLASH_ACCESS_KEY}`;
+        // 安全可靠的动态背景方案
+        const bgImages = [
+            "https://picsum.photos/1920/1080?tech",  // 免费图片源1
+            "https://source.unsplash.com/random/1920x1080/?technology",  // 免费图片源2
+            "fallback-bg.jpg"  // 本地备用图片
+        ];
 
-        // 图片加载器
-        const loadDynamicBackground = async () => {
-            try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-                
-                const bgImage = new Image();
-                bgImage.src = `${data.urls.raw}&w=1920&fit=max`;
-                bgImage.alt = data.alt_description || '科技背景图片';
-                
-                bgImage.onload = () => {
-                    document.querySelector('.loader').remove();
-                    document.getElementById('dynamic-bg').classList.add('loaded');
-                    document.getElementById('dynamic-bg').src = bgImage.src;
-                };
-
-                // 添加图片作者信息（可选）
-                const credit = document.createElement('div');
-                credit.style.position = 'absolute';
-                credit.style.bottom = '10px';
-                credit.style.right = '10px';
-                credit.style.color = 'white';
-                credit.style.zIndex = '4';
-                credit.innerHTML = `Photo by <a href="${data.user.links.html}?utm_source=your_app_name&utm_medium=referral" target="_blank" rel="noopener">${data.user.name}</a> on Unsplash`;
-                document.querySelector('.hero').appendChild(credit);
-                
-            } catch (error) {
-                console.error('加载背景失败:', error);
-                document.querySelector('.loader').remove();
-                document.getElementById('dynamic-bg').src = 'fallback-bg.jpg'; // 备选本地图片
-            }
+        // 随机选择图片源
+        function setDynamicBackground() {
+            const randomIndex = Math.floor(Math.random() * bgImages.length);
+            const img = new Image();
+            img.src = bgImages[randomIndex];
+            img.onload = () => {
+                document.getElementById('dynamicImage').src = img.src;
+            };
+            img.onerror = () => {
+                document.getElementById('dynamicImage').src = bgImages[2];
+            };
         }
 
         // 初始化加载
-        window.addEventListener('DOMContentLoaded', loadDynamicBackground);
+        window.addEventListener('load', setDynamicBackground);
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Every - 创新驱动未来</title>
+    <style>
+        /* 还原初始样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #007bff;
+        }
+
+        /* 修改后的安全背景方案 */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* 保留默认渐变 */
+            color: white;
+            padding: 0 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 新增动态背景层 */
+        .dynamic-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.3; /* 与渐变背景叠加 */
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* 保持原有区块样式不变 */
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="#home">首页</a></li>
+            <li><a href="#about">关于我们</a></li>
+            <li><a href="#services">服务</a></li>
+            <li><a href="#contact">联系我们</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero" id="home">
+        <!-- 动态背景图片 -->
+        <img class="dynamic-bg" id="dynamicImage" alt="动态背景">
+        <div class="hero-content">
+            <h1>欢迎来到 Every</h1>
+            <p>创新科技，塑造未来</p>
+        </div>
+    </section>
+
+    <!-- 其他区块保持不变 -->
+
+    <script>
+        // 安全可靠的动态背景方案
+        const bgImages = [
+            "https://picsum.photos/1920/1080?tech",  // 免费图片源1
+            "https://source.unsplash.com/random/1920x1080/?technology",  // 免费图片源2
+            "fallback-bg.jpg"  // 本地备用图片
+        ];
+
+        // 随机选择图片源
+        function setDynamicBackground() {
+            const randomIndex = Math.floor(Math.random() * bgImages.length);
+            const img = new Image();
+            img.src = bgImages[randomIndex];
+            img.onload = () => {
+                document.getElementById('dynamicImage').src = img.src;
+            };
+            img.onerror = () => {
+                document.getElementById('dynamicImage').src = bgImages[2];
+            };
+        }
+
+        // 初始化加载
+        window.addEventListener('load', setDynamicBackground);
     </script>
 </body>
 </html>
