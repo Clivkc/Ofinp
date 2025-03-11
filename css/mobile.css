@@ -1,4 +1,5 @@
-/* 移动端专用样式 - 2024年新增 */
+/* mobile.css - 新增移动端专用样式 */
+
 @media (max-width: 576px) {
     .nav-links {
         flex-wrap: wrap;
